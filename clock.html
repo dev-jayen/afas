@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+
+		<!-- CSS - Change this to adjust how clock looks (use caution not to change brackets commas colons etc) -->
+		<style type="text/css">
+		
+			/* Forces html to display properly in AFAS viewer object */
+			html {
+			
+				/* Hides overflow - eliminates scrollbars */
+				overflow:hidden;
+			}
+
+			/* Page Body */
+			body {
+				
+				margin: 0px;    
+				padding: 0px;
+				color: rgb(0,255,0);	/* red, green, blue; min 0 (darker), max 255 (lighter) */
+				background-color: RGB(0,0,0);	/* red, green, blue; min 0 (darker), max 255 (lighter) */
+				font-size: 65px;
+				font-family: "Arial";
+			}
+		</style>		
+		
+		<!-- JS -->
+		<script type="text/javascript">
+			
+			// Function to get current time and format it correctly
+			function UTCClock() {
+				
+				// Get current date/time
+				var gmtTime = new Date();
+				
+				// Get hours, minutes, and seconds
+				var clockH = gmtTime.getUTCHours();
+				var clockM = gmtTime.getUTCMinutes();
+				var clockS = gmtTime.getSeconds();
+				
+				// Format hours, minutes, and seconds
+				clockH = ((clockH<10) ? "0"+clockH : clockH);				
+				clockM = ((clockM<10) ? "0"+clockM : clockM);
+				clockS = ((clockS<10) ? "0"+clockS : clockS);
+				
+				// Compose formatted time string
+				var clock = "" + clockH + clockM + "/" + clockS;
+				
+				// Find clock span and set its content to formatted time
+				document.getElementById('clock').innerHTML = clock;
+			}
+		</script>
+	</head>
+	
+	<body onload="setInterval('UTCClock()', 500)">
+	
+		<span id="clock"></span>
+	</body>
+</html>
