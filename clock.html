@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 	<head>
 
 		<!-- CSS - Change this to adjust how clock looks (use caution not to change brackets commas colons etc) -->
@@ -27,33 +27,98 @@
 		<!-- JS -->
 		<script type="text/javascript">
 			
-			// Constants - Change these to change the formatting of the clock
+			// Constants
 			const interval = 500;
 			const utc = true;
+			const showSeconds = false;
+			const showQuarters = true;
 
+			//	Change these to change the formatting of the clock
 			const prefix = "";
 			const hmSep = "";
-			const msSep = "/";
+			const msSep = " ";
 			const suffix = "";
+			const quarterZero = "0";
+			const quarterOne = "1";
+			const quarterTwo = "2";
+			const quarterThree = "3";
+
 
 			// Function to get current time and format it correctly
 			function getTime() {
 				
+				// Declare variables
+				var currentTime;
+				var hours;
+				var minutes;
+				var seconds;
+				var timeString;
+
 				// Get current date/time
-				var currentTime = new Date();
+				currentTime = new Date();
 				
 				// Get hours, minutes, and seconds
-				var hours = (utc ? currentTime.getUTCHours() : currentTime.getHours() );
-				var minutes = currentTime.getUTCMinutes();
-				var seconds = currentTime.getSeconds();
+				hours = (utc ? currentTime.getUTCHours() : currentTime.getHours() );
+				minutes = currentTime.getMinutes();
+				seconds = currentTime.getSeconds();
 				
-				// Format hours, minutes, and seconds
-				hours = ( hours < 10 ? "0" + hours : hours );				
+				// If we want to show seconds, otherwise check to see if minute rounds up
+				if ( showSeconds ) {
+				
+					// If we want to show quarters instead of the actual digits
+					if ( showQuarters ) {
+
+						if ( seconds > 52 ) { 
+							
+							seconds = quarterZero;
+
+							// Since we are rounding up, we need to increment minutes
+							// But first, we need to see if we're out of minutes and also need to increment hours
+							if ( minutes == 59 ) {
+								
+								// Reset minutes to zero
+								minutes = 0;
+
+								// If hours are at max, then reset them, othewise increment them
+								if ( hours == 23 ) { hours == 0; }
+								else { hours++; }
+							} else { minutes++; }
+						} else if ( seconds > 37 ) { seconds = quarterThree; }
+						else if ( seconds > 22 ) { seconds = quarterTwo; }
+						else if ( seconds > 7 ) { seconds = quarterOne; }
+						else { seconds = quarterZero; }
+					} else {
+
+						// Format seconds
+						seconds = ( seconds < 10 ? "0" + seconds : seconds );
+					}
+				} else if ( seconds > 29 ) {
+
+					// Since we are rounding up, we need to increment minutes
+					// But first, we need to see if we're out of minutes and also need to increment hours
+					if ( minutes == 59 ) {
+								
+						// Reset minutes to zero
+						minutes = 0;
+
+						// If hours are at max, then reset them, othewise increment them
+						if ( hours == 23 ) { hours == 0; }
+						else { hours++; }
+					} else { minutes++; }
+				}
+
+				// Format minutes and hours
 				minutes = ( minutes < 10 ? "0" + minutes : minutes );
-				seconds = ( seconds < 10 ? "0" + seconds : seconds );
+				hours = ( hours < 10 ? "0" + hours : hours );
 				
-				// Compose formatted time string
-				var timeString = prefix + hours + hmSep + minutes + msSep + seconds + suffix;
+				// Compose start of formatted time string
+				timeString = prefix + hours + hmSep + minutes;
+
+				// If we're showing seconds, add the minute/second separator and the seconds
+				if ( showSeconds ) { timeString += msSep + seconds; }
+
+				// Add suffix
+				timeString += suffix;
 				
 				// Find clock span and set its content to formatted time
 				document.getElementById('clock').innerHTML = timeString;
