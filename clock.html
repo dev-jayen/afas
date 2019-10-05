@@ -27,32 +27,41 @@
 		<!-- JS -->
 		<script type="text/javascript">
 			
+			// Constants - Change these to change the formatting of the clock
+			const interval = 500;
+			const utc = true;
+
+			const prefix = "";
+			const hmSep = "";
+			const msSep = "/";
+			const suffix = "";
+
 			// Function to get current time and format it correctly
-			function UTCClock() {
+			function getTime() {
 				
 				// Get current date/time
-				var gmtTime = new Date();
+				var currentTime = new Date();
 				
 				// Get hours, minutes, and seconds
-				var clockH = gmtTime.getUTCHours();
-				var clockM = gmtTime.getUTCMinutes();
-				var clockS = gmtTime.getSeconds();
+				var hours = (utc ? currentTime.getUTCHours() : currentTime.getHours() );
+				var minutes = currentTime.getUTCMinutes();
+				var seconds = currentTime.getSeconds();
 				
 				// Format hours, minutes, and seconds
-				clockH = ((clockH<10) ? "0"+clockH : clockH);				
-				clockM = ((clockM<10) ? "0"+clockM : clockM);
-				clockS = ((clockS<10) ? "0"+clockS : clockS);
+				hours = ( hours < 10 ? "0" + hours : hours );				
+				minutes = ( minutes < 10 ? "0" + minutes : minutes );
+				seconds = ( seconds < 10 ? "0" + seconds : seconds );
 				
 				// Compose formatted time string
-				var clock = "" + clockH + clockM + "/" + clockS;
+				var timeString = prefix + hours + hmSep + minutes + msSep + seconds + suffix;
 				
 				// Find clock span and set its content to formatted time
-				document.getElementById('clock').innerHTML = clock;
+				document.getElementById('clock').innerHTML = timeString;
 			}
 		</script>
 	</head>
 	
-	<body onload="setInterval('UTCClock()', 500)">
+	<body onload="setInterval('getTime()', interval)">
 	
 		<span id="clock"></span>
 	</body>
