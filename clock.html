@@ -39,9 +39,6 @@
 
 				// Get current time
 				currentTime			= new Time( true );
-				currentTimeLocal	= new Time( false );
-				currentTimeQuarters	= new Time( true );
-				currentTimeRound	= new Time( true );
 				
 				// Find clock span and set its content to formatted time
 				document.getElementById('clock').innerHTML = 
@@ -54,40 +51,6 @@
 						hmSep:	"",					// Text you want between the hours and minutes, e.g. ":"
 						msSep:	"/"					// Text you want between the minutes and seconds, e.g. "/"
 					});
-
-				document.getElementById('clockLocal').innerHTML = 
-				
-					currentTimeLocal.formatString({
-						
-						format:	timeFormat.full,	// Time format
-						prefix:	"Local: ",			// Any text you want before the time, e.g. "Time: "
-						suffix:	"J",				// Any text you want after the time, e.g. "Z"
-						hmSep:	":",				// Text you want between the hours and minutes, e.g. ":"
-						msSep:	":"					// Text you want between the minutes and seconds, e.g. "/"
-					});
-				document.getElementById('clockQuarters').innerHTML = 
-				
-					currentTimeQuarters.formatString({
-						
-						format:	timeFormat.quarters,	// Time format
-						prefix:	"Quarters: ",			// Any text you want before the time, e.g. "Time: "
-						suffix:	"",						// Any text you want after the time, e.g. "Z"
-						hmSep:	":",					// Text you want between the hours and minutes, e.g. ":"
-						qZero:	"--",					// Text displayed for 0 quarters, e.g. "--"
-						qOne:	" & 1/4",				// Text displayed for 1 quarter, e.g. " & 1/4"
-						qTwo:	" & 1/2",				// Text displayed for 2 quarters, e.g. " & 1/2"
-						qThree:	" & 3/4",				// Text displayed for 3 quarters, e.g. " & 3/4"
-					});
-				document.getElementById('clockRound').innerHTML = 
-				
-					currentTimeRound.formatString({
-						
-						format:	timeFormat.round,	// Time format
-						prefix:	"Rounded: ",		// Any text you want before the time, e.g. "Time: "
-						suffix:	"",					// Any text you want after the time, e.g. "Z"
-						hmSep:	":",				// Text you want between the hours and minutes, e.g. ":"
-					});
-			}
 
 			function TimeFormat ( index ) {
 
@@ -188,9 +151,6 @@
 	
 	<body onload="setInterval('getTime()', interval)">
 	
-		<span id="clock"></span><br>
-		<span id="clockLocal"></span><br>
-		<span id="clockQuarters"></span><br>
-		<span id="clockRound"></span>
+		<span id="clock"></span>
 	</body>
 </html>
