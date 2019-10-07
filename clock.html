@@ -39,17 +39,51 @@
 
 				// Get current time
 				currentTime = new Time( true );
+				currentTimeLocal = new Time( false );
+				currentTimeQuarters = new Time( true );
+				currentTimeRound = new Time( true );
 				
 				// Find clock span and set its content to formatted time
 				document.getElementById('clock').innerHTML = 
 				
 					currentTime.formatString(
 						
-						timeFormat.quarters,	// Time format
-						"P",				// Any text you want before the time, e.g. "Time: "
-						"S",				// Any text you want after the time, e.g. "Z"
+						timeFormat.full,	// Time format
+						"UTC: ",				// Any text you want before the time, e.g. "Time: "
+						"Z",				// Any text you want after the time, e.g. "Z"
 						":",				// Text you want between the hours and minutes, e.g. ":"
-						"/"					// Text you want between the minutes and seconds, e.g. "/"
+						":"					// Text you want between the minutes and seconds, e.g. "/"
+					);
+
+				document.getElementById('clockLocal').innerHTML = 
+				
+					currentTimeLocal.formatString(
+						
+						timeFormat.full,	// Time format
+						"Local: ",				// Any text you want before the time, e.g. "Time: "
+						"J",				// Any text you want after the time, e.g. "Z"
+						":",				// Text you want between the hours and minutes, e.g. ":"
+						":"					// Text you want between the minutes and seconds, e.g. "/"
+					);
+				document.getElementById('clockQuarters').innerHTML = 
+				
+					currentTimeQuarters.formatString(
+						
+						timeFormat.quarters,	// Time format
+						"Quarters: ",				// Any text you want before the time, e.g. "Time: "
+						"",				// Any text you want after the time, e.g. "Z"
+						":",				// Text you want between the hours and minutes, e.g. ":"
+						" & "					// Text you want between the minutes and seconds, e.g. "/"
+					);
+				document.getElementById('clockRound').innerHTML = 
+				
+					currentTimeRound.formatString(
+						
+						timeFormat.round,	// Time format
+						"Rounded: ",				// Any text you want before the time, e.g. "Time: "
+						"",				// Any text you want after the time, e.g. "Z"
+						":",				// Text you want between the hours and minutes, e.g. ":"
+						""					// Text you want between the minutes and seconds, e.g. "/"
 					);
 			}
 
@@ -57,7 +91,7 @@
 
 				this.full		= index++; // e.g. hh:mm:ss
 				this.quarters	= index++; // e.g. hh:mm:#/4
-				this.roundATC	= index++; // e.g. hh:mm
+				this.round		= index++; // e.g. hh:mm
 				//this.	= index++; // e.g. 
 			}
 
@@ -96,6 +130,7 @@
 						case timeFormat.round: {
 
 							// Round up or not
+							// Reference FAAO JO 7110.65Y 1-2-1m.
 							if ( this.seconds > 29 ) { this.incrMinutes(); }
 
 							// Set seconds to blank text
@@ -104,18 +139,20 @@
 						case timeFormat.quarters: {
 
 							// Figure out how many quarters there are, then set seconds to that number
+							// Reference FAAO JO 7110.65Y 2-4-17c.3
 							if ( this.seconds > 52 ) { 
 							
-								this.seconds = 0;
+								this.seconds = "--";
 								this.incrMinutes();
-							} else if ( this.seconds > 37 ) { this.seconds = 3; }
-							else if ( this.seconds > 22 ) { this.seconds = 2; }
-							else if ( this.seconds > 7 ) { this.seconds = 1; }
-							else { this.seconds = 0; }
+							} else if ( this.seconds > 37 ) { this.seconds = msSep + "3/4"; }
+							else if ( this.seconds > 22 ) { this.seconds = msSep + "1/2"; }
+							else if ( this.seconds > 7 ) { this.seconds = msSep + "1/4"; }
+							else { this.seconds = "--"; }
 						break;}
 						case timeFormat.full: {
 							
-							this.seconds = pad( this.seconds );
+							// We only want to pad the seconds if we are using them
+							this.seconds = msSep + pad( this.seconds );
 						break;}
 						
 					}
@@ -125,7 +162,6 @@
 							+ pad( this.hours )
 							+ hmSep
 							+ pad( this.minutes )
-							+ msSep
 							+ this.seconds
 							+ suffix;
 				}
@@ -135,6 +171,9 @@
 	
 	<body onload="setInterval('getTime()', interval)">
 	
-		<span id="clock"></span>
+		<span id="clock"></span><br>
+		<span id="clockLocal"></span><br>
+		<span id="clockQuarters"></span><br>
+		<span id="clockRound"></span>
 	</body>
 </html>
