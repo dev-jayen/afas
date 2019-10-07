@@ -47,18 +47,35 @@
 				
 				// Declare variables
 				var currentTime;
+				var currentTimeLocal;
+				var currentTimeQuarters;
+				var currentTimeRound;
+				var currentTimeSTARS;
 
 				// Get current time
 				currentTime			= new Time( true );
 				currentTimeLocal	= new Time( false );
 				currentTimeQuarters	= new Time( true );
 				currentTimeRound	= new Time( true );
+				currentTimeSTARS	= new Time( true );
 				
 				// Find clock span and set its content to formatted time
 				document.getElementById('clock').innerHTML = 
 				
 					currentTime.formatString({
 						
+						/* Function to format time as a string using specified options given as object props
+							Props used:
+								format:	Time format
+								prefix:	Any text you want before the time, e.g. "Time: "		[default: ""]
+								suffix:	Any text you want after the time, e.g. "Z"				[default: ""]
+								hmSep:	Text you want between the hours and minutes, e.g. ":"	[default: ":"]
+								msSep:	Text you want between the minutes and seconds, e.g. "/"	[default: ":"]
+								qZero:	Text displayed for 0 quarters, e.g. "--"				[default: "--"]
+								qOne:	Text displayed for 1 quarter, e.g. " & 1/4"				[default: "1/4"]
+								qTwo:	Text displayed for 2 quarters, e.g. " & 1/2"			[default: "1/2"]
+								qThree:	Text displayed for 3 quarters, e.g. " & 3/4"			[default: "3/4"]
+						*/
 						format:	timeFormat.full,	// Time format
 						prefix:	"UTC: ",			// Any text you want before the time, e.g. "Time: "
 						suffix:	"Z",				// Any text you want after the time, e.g. "Z"
@@ -98,8 +115,17 @@
 						suffix:	"",					// Any text you want after the time, e.g. "Z"
 						hmSep:	":",				// Text you want between the hours and minutes, e.g. ":"
 					});
+				document.getElementById('clockSTARS').innerHTML = 
+				
+					currentTimeSTARS.formatString({
+						
+						format:	timeFormat.full,	// Time format
+						prefix:	"STARS: ",			// Any text you want before the time, e.g. "Time: "
+						hmSep:	"",					// Text you want between the hours and minutes, e.g. ":"
+						msSep:	"/"					// Text you want between the minutes and seconds, e.g. "/"
+					});
 			}
-
+			
 			function TimeFormat ( index ) {
 
 				this.full		= index++; // e.g. hh:mm:ss
@@ -202,6 +228,7 @@
 		<span id="clock"></span><br>
 		<span id="clockLocal"></span><br>
 		<span id="clockQuarters"></span><br>
-		<span id="clockRound"></span>
+		<span id="clockRound"></span><br>
+		<span id="clockSTARS"></span>
 	</body>
 </html>
