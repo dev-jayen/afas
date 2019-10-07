@@ -29,99 +29,127 @@
 			
 			// Constants
 			const interval = 500;
-			const utc = true;
-			const showSeconds = false;
-			const showQuarters = true;
-
-			//	Change these to change the formatting of the clock
-			const prefix = "";
-			const hmSep = "";
-			const msSep = " ";
-			const suffix = "";
-			const quarterZero = "0";
-			const quarterOne = "1";
-			const quarterTwo = "2";
-			const quarterThree = "3";
-
+			const timeFormat = new TimeFormat(0);
 
 			// Function to get current time and format it correctly
 			function getTime() {
 				
 				// Declare variables
 				var currentTime;
-				var hours;
-				var minutes;
-				var seconds;
-				var timeString;
 
-				// Get current date/time
-				currentTime = new Date();
-				
-				// Get hours, minutes, and seconds
-				hours = (utc ? currentTime.getUTCHours() : currentTime.getHours() );
-				minutes = currentTime.getMinutes();
-				seconds = currentTime.getSeconds();
-				
-				// If we want to show seconds, otherwise check to see if minute rounds up
-				if ( showSeconds ) {
-				
-					// If we want to show quarters instead of the actual digits
-					if ( showQuarters ) {
-
-						if ( seconds > 52 ) { 
-							
-							seconds = quarterZero;
-
-							// Since we are rounding up, we need to increment minutes
-							// But first, we need to see if we're out of minutes and also need to increment hours
-							if ( minutes == 59 ) {
-								
-								// Reset minutes to zero
-								minutes = 0;
-
-								// If hours are at max, then reset them, othewise increment them
-								if ( hours == 23 ) { hours == 0; }
-								else { hours++; }
-							} else { minutes++; }
-						} else if ( seconds > 37 ) { seconds = quarterThree; }
-						else if ( seconds > 22 ) { seconds = quarterTwo; }
-						else if ( seconds > 7 ) { seconds = quarterOne; }
-						else { seconds = quarterZero; }
-					} else {
-
-						// Format seconds
-						seconds = ( seconds < 10 ? "0" + seconds : seconds );
-					}
-				} else if ( seconds > 29 ) {
-
-					// Since we are rounding up, we need to increment minutes
-					// But first, we need to see if we're out of minutes and also need to increment hours
-					if ( minutes == 59 ) {
-								
-						// Reset minutes to zero
-						minutes = 0;
-
-						// If hours are at max, then reset them, othewise increment them
-						if ( hours == 23 ) { hours == 0; }
-						else { hours++; }
-					} else { minutes++; }
-				}
-
-				// Format minutes and hours
-				minutes = ( minutes < 10 ? "0" + minutes : minutes );
-				hours = ( hours < 10 ? "0" + hours : hours );
-				
-				// Compose start of formatted time string
-				timeString = prefix + hours + hmSep + minutes;
-
-				// If we're showing seconds, add the minute/second separator and the seconds
-				if ( showSeconds ) { timeString += msSep + seconds; }
-
-				// Add suffix
-				timeString += suffix;
+				// Get current time
+				currentTime = new Time();
 				
 				// Find clock span and set its content to formatted time
-				document.getElementById('clock').innerHTML = timeString;
+				document.getElementById('clock').innerHTML = 
+				
+					currentTime.formatString(
+						
+						timeFormat.quarters,	// Time format
+						true,				// true to use UTC time, false to use local time
+						"P",				// Any text you want before the time, e.g. "Time: "
+						"S",				// Any text you want after the time, e.g. "Z"
+						":",				// Text you want between the hours and minutes, e.g. ":"
+						"/"					// Text you want between the minutes and seconds, e.g. "/"
+					);
+			}
+
+			function TimeFormat ( index ) {
+
+				this.full		= index++; // e.g. hh:mm:ss
+				this.quarters	= index++; // e.g. hh:mm:#/4
+				this.roundATC	= index++; // e.g. hh:mm
+				//this.	= index++; // e.g. 
+			}
+
+			// Time object constructor
+			function Time () {
+
+				this.time = new Date();
+
+				this.hoursZ		= this.time.getUTCHours();
+				this.hoursJ		= this.time.getHours();
+				this.minutesZ	= this.time.getUTCMinutes();
+				this.minutesJ	= this.time.getMinutes();
+				this.seconds	= this.time.getSeconds();
+
+				// Function to add leading zeroes to any number < 10
+				pad = function ( number ) { return ( number < 10 ? "0" + number : number ); }
+
+				// Function to increment minute
+				this.incrMinuteZ = function () {
+
+					// First, we need to see if we're out of minutes and also need to increment hours
+					if ( this.minutesZ == 59 ) {
+						
+						// Reset minutes to zero
+						this.minutesZ = 0;
+
+						// If hours are at max, then reset them, othewise increment them
+						if ( this.hoursZ == 23 ) { this.hoursZ == 0; }
+						else { this.hoursZ++; }
+					} else { this.minutesZ++; }
+				}
+
+				// Function to increment minute
+				this.incrMinuteJ = function () {
+
+					// First, we need to see if we're out of minutes and also need to increment hours
+					if ( this.minutesJ == 59 ) {
+						
+						// Reset minutes to zero
+						this.minutesJ = 0;
+
+						// If hours are at max, then reset them, othewise increment them
+						if ( this.hoursJ == 23 ) { this.hoursJ == 0; }
+						else { this.hoursJ++; }
+					} else { this.minutesJ++; }
+				}
+
+				this.formatString = function ( format, isUTC, prefix, suffix, hmSep, msSep ) {
+
+					// Switch through formats
+					switch( format ) {	// need to fix these to pad them out
+
+						case timeFormat.round: {
+
+							// Round up or not
+							if ( this.seconds > 29 ) {
+
+								( isUTC ? this.incrMinuteZ() : this.incrMinuteJ() );
+							}
+
+							// Set seconds to blank text
+							this.seconds = "";
+						break;}
+						case timeFormat.quarters: {
+
+							// Figure out how many quarters there are, then set seconds to that number
+							if ( this.seconds > 52 ) { 
+							
+								this.seconds = 0;
+								( isUTC ? this.incrMinuteZ() : this.incrMinuteJ() );
+							} else if ( this.seconds > 37 ) { this.seconds = 3; }
+							else if ( this.seconds > 22 ) { this.seconds = 2; }
+							else if ( this.seconds > 7 ) { this.seconds = 1; }
+							else { this.seconds = 0; }
+						break;}
+						case timeFormat.full: {
+							
+							this.seconds = pad( this.seconds );
+						break;}
+						
+					}
+
+					return ""
+							+ prefix
+							+ pad( ( isUTC ? this.hoursZ : this.hoursJ ) )
+							+ hmSep
+							+ pad( ( isUTC ? this.minutesZ : this.minutesJ ) )
+							+ msSep
+							+ this.seconds
+							+ suffix;
+				}
 			}
 		</script>
 	</head>
