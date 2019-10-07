@@ -105,10 +105,10 @@
 				this.seconds	= this.time.getSeconds();
 
 				// Function to add leading zeroes to any number < 10
-				pad = function ( number ) { return ( number < 10 ? "0" + number : number ); }
+				pad = number => ( number < 10 ? "0" + number : number );
 
 				// Function to increment minute
-				this.incrMinutes = function () {
+				this.incrMinutes = () => {
 
 					// First, we need to see if we're out of minutes and also need to increment hours
 					if ( this.minutes == 59 ) {
@@ -122,7 +122,7 @@
 					} else { this.minutes++; }
 				}
 
-				this.formatString = function ( format, prefix, suffix, hmSep, msSep ) {
+				this.formatString = ( format, prefix, suffix, hmSep, msSep ) => {
 
 					// Switch through formats
 					switch( format ) {	// need to fix these to pad them out
