@@ -163,12 +163,13 @@
 						
 					}
 
+					// Return composed string
 					return ""
 							+ ( options.prefix	== undefined ? ""	: options.prefix )
 							+ pad( this.hours )
 							+ ( options.hmSep	== undefined ? ":"	: options.hmSep )
 							+ pad( this.minutes )
-							+ this.seconds
+							+ this.seconds	// We padded these in the default switch case
 							+ ( options.suffix	== undefined ? ""	: options.suffix );
 				}
 			}
