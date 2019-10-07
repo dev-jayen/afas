@@ -46,45 +46,48 @@
 				// Find clock span and set its content to formatted time
 				document.getElementById('clock').innerHTML = 
 				
-					currentTime.formatString(
+					currentTime.formatString({
 						
-						timeFormat.full,	// Time format
-						"UTC: ",				// Any text you want before the time, e.g. "Time: "
-						"Z",				// Any text you want after the time, e.g. "Z"
-						":",				// Text you want between the hours and minutes, e.g. ":"
-						":"					// Text you want between the minutes and seconds, e.g. "/"
-					);
+						format:	timeFormat.full,	// Time format
+						prefix:	"UTC: ",			// Any text you want before the time, e.g. "Time: "
+						suffix:	"Z",				// Any text you want after the time, e.g. "Z"
+						hmSep:	"",					// Text you want between the hours and minutes, e.g. ":"
+						msSep:	"/"					// Text you want between the minutes and seconds, e.g. "/"
+					});
 
 				document.getElementById('clockLocal').innerHTML = 
 				
-					currentTimeLocal.formatString(
+					currentTimeLocal.formatString({
 						
-						timeFormat.full,	// Time format
-						"Local: ",				// Any text you want before the time, e.g. "Time: "
-						"J",				// Any text you want after the time, e.g. "Z"
-						":",				// Text you want between the hours and minutes, e.g. ":"
-						":"					// Text you want between the minutes and seconds, e.g. "/"
-					);
+						format:	timeFormat.full,	// Time format
+						prefix:	"Local: ",			// Any text you want before the time, e.g. "Time: "
+						suffix:	"J",				// Any text you want after the time, e.g. "Z"
+						hmSep:	":",				// Text you want between the hours and minutes, e.g. ":"
+						msSep:	":"					// Text you want between the minutes and seconds, e.g. "/"
+					});
 				document.getElementById('clockQuarters').innerHTML = 
 				
-					currentTimeQuarters.formatString(
+					currentTimeQuarters.formatString({
 						
-						timeFormat.quarters,	// Time format
-						"Quarters: ",				// Any text you want before the time, e.g. "Time: "
-						"",				// Any text you want after the time, e.g. "Z"
-						":",				// Text you want between the hours and minutes, e.g. ":"
-						" & "					// Text you want between the minutes and seconds, e.g. "/"
-					);
+						format:	timeFormat.quarters,	// Time format
+						prefix:	"Quarters: ",			// Any text you want before the time, e.g. "Time: "
+						suffix:	"",						// Any text you want after the time, e.g. "Z"
+						hmSep:	":",					// Text you want between the hours and minutes, e.g. ":"
+						qZero:	"--",					// Text displayed for 0 quarters, e.g. "--"
+						qOne:	" & 1/4",				// Text displayed for 1 quarter, e.g. " & 1/4"
+						qTwo:	" & 1/2",				// Text displayed for 2 quarters, e.g. " & 1/2"
+						qThree:	" & 3/4",				// Text displayed for 3 quarters, e.g. " & 3/4"
+					});
 				document.getElementById('clockRound').innerHTML = 
 				
-					currentTimeRound.formatString(
+					currentTimeRound.formatString({
 						
-						timeFormat.round,	// Time format
-						"Rounded: ",				// Any text you want before the time, e.g. "Time: "
-						"",				// Any text you want after the time, e.g. "Z"
-						":",				// Text you want between the hours and minutes, e.g. ":"
-						""					// Text you want between the minutes and seconds, e.g. "/"
-					);
+						format:	timeFormat.round,	// Time format
+						prefix:	"Rounded: ",		// Any text you want before the time, e.g. "Time: "
+						suffix:	"",					// Any text you want after the time, e.g. "Z"
+						hmSep:	":",				// Text you want between the hours and minutes, e.g. ":"
+						msSep:	""					// Text you want between the minutes and seconds, e.g. "/"
+					});
 			}
 
 			function TimeFormat ( index ) {
@@ -122,10 +125,10 @@
 					} else { this.minutes++; }
 				}
 
-				this.formatString = ( format, prefix, suffix, hmSep, msSep ) => {
+				this.formatString = options => {
 
 					// Switch through formats
-					switch( format ) {	// need to fix these to pad them out
+					switch( options.format ) {	// need to fix these to pad them out
 
 						case timeFormat.round: {
 
@@ -142,28 +145,28 @@
 							// Reference FAAO JO 7110.65Y 2-4-17c.3
 							if ( this.seconds > 52 ) { 
 							
-								this.seconds = "--";
+								this.seconds = options.qZero;
 								this.incrMinutes();
-							} else if ( this.seconds > 37 ) { this.seconds = msSep + "3/4"; }
-							else if ( this.seconds > 22 ) { this.seconds = msSep + "1/2"; }
-							else if ( this.seconds > 7 ) { this.seconds = msSep + "1/4"; }
-							else { this.seconds = "--"; }
+							} else if ( this.seconds > 37 ) { this.seconds = options.qThree; }
+							else if ( this.seconds > 22 ) { this.seconds = options.qTwo; }
+							else if ( this.seconds > 7 ) { this.seconds = options.qOne; }
+							else { this.seconds = options.qZero; }
 						break;}
 						case timeFormat.full: {
 							
 							// We only want to pad the seconds if we are using them
-							this.seconds = msSep + pad( this.seconds );
+							this.seconds = options.msSep + pad( this.seconds );
 						break;}
 						
 					}
 
 					return ""
-							+ prefix
+							+ options.prefix
 							+ pad( this.hours )
-							+ hmSep
+							+ options.hmSep
 							+ pad( this.minutes )
 							+ this.seconds
-							+ suffix;
+							+ options.suffix;
 				}
 			}
 		</script>
