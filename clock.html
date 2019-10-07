@@ -86,7 +86,6 @@
 						prefix:	"Rounded: ",		// Any text you want before the time, e.g. "Time: "
 						suffix:	"",					// Any text you want after the time, e.g. "Z"
 						hmSep:	":",				// Text you want between the hours and minutes, e.g. ":"
-						msSep:	""					// Text you want between the minutes and seconds, e.g. "/"
 					});
 			}
 
@@ -101,30 +100,43 @@
 			// Time object constructor
 			function Time ( isUTC ) {
 
-				this.time = new Date();
+				// Get new date object to extract values from
+				var time = new Date();
 
-				this.hours		= ( isUTC ? this.time.getUTCHours() : this.time.getHours() );
-				this.minutes	= ( isUTC ? this.time.getUTCMinutes() : this.time.getMinutes() );
-				this.seconds	= this.time.getSeconds();
+				// Get hours, minutes, and seconds as object props
+				this.hours		= ( isUTC ? time.getUTCHours() : time.getHours() );
+				this.minutes	= ( isUTC ? time.getUTCMinutes() : time.getMinutes() );
+				this.seconds	= time.getSeconds();
 
-				// Function to add leading zeroes to any number < 10
+				// Abstract function to add leading zeroes to any number < 10
 				pad = number => ( number < 10 ? "0" + number : number );
 
 				// Function to increment minute
 				this.incrMinutes = () => {
 
-					// First, we need to see if we're out of minutes and also need to increment hours
+					// If minutes are at max (i.e. 59), reset to 0 and increment hours
 					if ( this.minutes == 59 ) {
 						
 						// Reset minutes to zero
 						this.minutes = 0;
 
-						// If hours are at max, then reset them, othewise increment them
-						if ( this.hours == 23 ) { this.hours == 0; }
-						else { this.hours++; }
+						// If hours are at max (i.e. 23), then reset them, othewise increment them
+						( this.hours == 23 ? this.hours = 0 : this.hours++ );
 					} else { this.minutes++; }
 				}
 
+				/* Function to format time as a string using specified options given as object props
+					Props used:
+						format:	Time format
+						prefix:	Any text you want before the time, e.g. "Time: "
+						suffix:	Any text you want after the time, e.g. "Z"
+						hmSep:	Text you want between the hours and minutes, e.g. ":"
+						msSep:	Text you want between the minutes and seconds, e.g. "/"
+						qZero:	Text displayed for 0 quarters, e.g. "--"
+						qOne:	Text displayed for 1 quarter, e.g. " & 1/4"
+						qTwo:	Text displayed for 2 quarters, e.g. " & 1/2"
+						qThree:	Text displayed for 3 quarters, e.g. " & 3/4"
+				*/
 				this.formatString = options => {
 
 					// Switch through formats
@@ -134,7 +146,7 @@
 
 							// Round up or not
 							// Reference FAAO JO 7110.65Y 1-2-1m.
-							if ( this.seconds > 29 ) { this.incrMinutes(); }
+							if ( this.seconds > 29 ) this.incrMinutes();
 
 							// Set seconds to blank text
 							this.seconds = "";
@@ -145,28 +157,30 @@
 							// Reference FAAO JO 7110.65Y 2-4-17c.3
 							if ( this.seconds > 52 ) { 
 							
-								this.seconds = options.qZero;
+								this.seconds = ( options.qZero == undefined ? "" : options.qZero );
 								this.incrMinutes();
-							} else if ( this.seconds > 37 ) { this.seconds = options.qThree; }
-							else if ( this.seconds > 22 ) { this.seconds = options.qTwo; }
-							else if ( this.seconds > 7 ) { this.seconds = options.qOne; }
-							else { this.seconds = options.qZero; }
+							}
+							else if ( this.seconds > 37 )	{ this.seconds = ( options.qThree	== undefined ? "3/4"	: options.qThree	); }
+							else if ( this.seconds > 22 )	{ this.seconds = ( options.qTwo		== undefined ? "1/2"	: options.qTwo		); }
+							else if ( this.seconds > 7 )	{ this.seconds = ( options.qOne		== undefined ? "1/4"	: options.qOne		); }
+							else							{ this.seconds = ( options.qZero	== undefined ? ""		: options.qZero		); }
 						break;}
-						case timeFormat.full: {
+						case timeFormat.full: {}	// Pass through to default
+						default: {
 							
 							// We only want to pad the seconds if we are using them
-							this.seconds = options.msSep + pad( this.seconds );
+							this.seconds = ( options.msSep == undefined ? "" : options.msSep ) + pad( this.seconds );
 						break;}
 						
 					}
 
 					return ""
-							+ options.prefix
+							+ ( options.prefix == undefined ? "" : options.prefix )
 							+ pad( this.hours )
-							+ options.hmSep
+							+ ( options.hmSep == undefined ? "" : options.hmSep )
 							+ pad( this.minutes )
 							+ this.seconds
-							+ options.suffix;
+							+ ( options.suffix == undefined ? "" : options.suffix );
 				}
 			}
 		</script>
