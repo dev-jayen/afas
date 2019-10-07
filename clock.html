@@ -56,12 +56,27 @@
 				
 					currentTime.formatString({
 						
-						format:	timeFormat.full,	// Time format
-						prefix:	"UTC: ",			// Any text you want before the time, e.g. "Time: "
-						suffix:	"Z",				// Any text you want after the time, e.g. "Z"
-						hmSep:	"",					// Text you want between the hours and minutes, e.g. ":"
-						msSep:	"/"					// Text you want between the minutes and seconds, e.g. "/"
+						/* Use the following properties (props) to adjust how the time is formatted
+							You can omit an properties you don't want to use
+							Props used:
+								format:	Time format												[default: timeFormat.full]
+										timeFormat.full		-Shows exact hours, minutes, and seconds
+										timeFormat.quarters -Shows quarters instead of actual seconds
+										timeFormat.round	-Rounds to next minute at 30 seconds, does not show seconds
+								prefix:	Any text you want before the time, e.g. "Time: "		[default: ""]
+								suffix:	Any text you want after the time, e.g. "Z"				[default: ""]
+								hmSep:	Text you want between the hours and minutes, e.g. ":"	[default: ":"]
+								msSep:	Text you want between the minutes and seconds, e.g. "/"	[default: ":"]
+								qZero:	Text displayed for 0 quarters, e.g. "--"				[default: "--"]
+								qOne:	Text displayed for 1 quarter, e.g. " & 1/4"				[default: "1/4"]
+								qTwo:	Text displayed for 2 quarters, e.g. " & 1/2"			[default: "1/2"]
+								qThree:	Text displayed for 3 quarters, e.g. " & 3/4"			[default: "3/4"]
+						*/
+						format:	timeFormat.full,
+						hmSep:	"",
+						msSep:	"/"
 					});
+			}
 
 			function TimeFormat ( index ) {
 
