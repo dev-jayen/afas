@@ -64,9 +64,13 @@
 				
 					currentTime.formatString({
 						
-						/* Function to format time as a string using specified options given as object props
+						/* Use the following properties (props) to adjust how the time is formatted
+							You can omit an properties you don't want to use
 							Props used:
-								format:	Time format
+								format:	Time format												[default: timeFormat.full]
+										timeFormat.full		-Shows exact hours, minutes, and seconds
+										timeFormat.quarters -Shows quarters instead of actual seconds
+										timeFormat.round	-Rounds to next minute at 30 seconds, does not show seconds
 								prefix:	Any text you want before the time, e.g. "Time: "		[default: ""]
 								suffix:	Any text you want after the time, e.g. "Z"				[default: ""]
 								hmSep:	Text you want between the hours and minutes, e.g. ":"	[default: ":"]
