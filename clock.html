@@ -38,7 +38,7 @@
 				var currentTime;
 
 				// Get current time
-				currentTime = new Time();
+				currentTime = new Time( true );
 				
 				// Find clock span and set its content to formatted time
 				document.getElementById('clock').innerHTML = 
@@ -46,7 +46,6 @@
 					currentTime.formatString(
 						
 						timeFormat.quarters,	// Time format
-						true,				// true to use UTC time, false to use local time
 						"P",				// Any text you want before the time, e.g. "Time: "
 						"S",				// Any text you want after the time, e.g. "Z"
 						":",				// Text you want between the hours and minutes, e.g. ":"
@@ -63,50 +62,33 @@
 			}
 
 			// Time object constructor
-			function Time () {
+			function Time ( isUTC ) {
 
 				this.time = new Date();
 
-				this.hoursZ		= this.time.getUTCHours();
-				this.hoursJ		= this.time.getHours();
-				this.minutesZ	= this.time.getUTCMinutes();
-				this.minutesJ	= this.time.getMinutes();
+				this.hours		= ( isUTC ? this.time.getUTCHours() : this.time.getHours() );
+				this.minutes	= ( isUTC ? this.time.getUTCMinutes() : this.time.getMinutes() );
 				this.seconds	= this.time.getSeconds();
 
 				// Function to add leading zeroes to any number < 10
 				pad = function ( number ) { return ( number < 10 ? "0" + number : number ); }
 
 				// Function to increment minute
-				this.incrMinuteZ = function () {
+				this.incrMinutes = function () {
 
 					// First, we need to see if we're out of minutes and also need to increment hours
-					if ( this.minutesZ == 59 ) {
+					if ( this.minutes == 59 ) {
 						
 						// Reset minutes to zero
-						this.minutesZ = 0;
+						this.minutes = 0;
 
 						// If hours are at max, then reset them, othewise increment them
-						if ( this.hoursZ == 23 ) { this.hoursZ == 0; }
-						else { this.hoursZ++; }
-					} else { this.minutesZ++; }
+						if ( this.hours == 23 ) { this.hours == 0; }
+						else { this.hours++; }
+					} else { this.minutes++; }
 				}
 
-				// Function to increment minute
-				this.incrMinuteJ = function () {
-
-					// First, we need to see if we're out of minutes and also need to increment hours
-					if ( this.minutesJ == 59 ) {
-						
-						// Reset minutes to zero
-						this.minutesJ = 0;
-
-						// If hours are at max, then reset them, othewise increment them
-						if ( this.hoursJ == 23 ) { this.hoursJ == 0; }
-						else { this.hoursJ++; }
-					} else { this.minutesJ++; }
-				}
-
-				this.formatString = function ( format, isUTC, prefix, suffix, hmSep, msSep ) {
+				this.formatString = function ( format, prefix, suffix, hmSep, msSep ) {
 
 					// Switch through formats
 					switch( format ) {	// need to fix these to pad them out
@@ -114,10 +96,7 @@
 						case timeFormat.round: {
 
 							// Round up or not
-							if ( this.seconds > 29 ) {
-
-								( isUTC ? this.incrMinuteZ() : this.incrMinuteJ() );
-							}
+							if ( this.seconds > 29 ) { this.incrMinutes(); }
 
 							// Set seconds to blank text
 							this.seconds = "";
@@ -128,7 +107,7 @@
 							if ( this.seconds > 52 ) { 
 							
 								this.seconds = 0;
-								( isUTC ? this.incrMinuteZ() : this.incrMinuteJ() );
+								this.incrMinutes();
 							} else if ( this.seconds > 37 ) { this.seconds = 3; }
 							else if ( this.seconds > 22 ) { this.seconds = 2; }
 							else if ( this.seconds > 7 ) { this.seconds = 1; }
@@ -143,9 +122,9 @@
 
 					return ""
 							+ prefix
-							+ pad( ( isUTC ? this.hoursZ : this.hoursJ ) )
+							+ pad( this.hours )
 							+ hmSep
-							+ pad( ( isUTC ? this.minutesZ : this.minutesJ ) )
+							+ pad( this.minutes )
 							+ msSep
 							+ this.seconds
 							+ suffix;
